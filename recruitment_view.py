@@ -89,10 +89,16 @@ def recruitment_page():
                             st.write(f"**Summary:** {candidate.resume_summary}")
                             if candidate.zoom_link:
                                 st.write(f"**Zoom Link:** [Join Meeting]({candidate.zoom_link})")
-                            if candidate.status == "shortlisted":
-                                st.info("Interview invitation email sent.")
-                            else:
-                                st.warning("Rejection email sent.")
+                                if candidate.zoom_status:
+                                    st.caption(f"Zoom Status: {candidate.zoom_status}")
+                            
+                            if candidate.email_status:
+                                if "Success" in candidate.email_status:
+                                    st.success(f"📧 {candidate.email_status}")
+                                elif "SIMULATION" in candidate.email_status:
+                                    st.warning(f"🧪 {candidate.email_status}")
+                                else:
+                                    st.error(f"❌ {candidate.email_status}")
 
                 except Exception as e:
                     status.update(label="❌ Error occurred", state="error")

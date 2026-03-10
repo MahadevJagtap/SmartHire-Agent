@@ -85,6 +85,11 @@ def generate_zoom_link(state: RecruitmentState) -> Dict[str, Any]:
     for candidate in state["shortlisted_candidates"]:
         link = zoom_meeting_tool.invoke({"candidate_name": candidate.name})
         candidate.zoom_link = link
+        # Extract status message from tool response if it's a simulation/error
+        if " simulation/" in link or "api-error" in link or "exception" in link:
+            candidate.zoom_status = f"Warning: {link.split('/')[-1].replace('-', ' ').title()}"
+        else:
+            candidate.zoom_status = "Success: Meeting generated"
     return {"shortlisted_candidates": state["shortlisted_candidates"]}
 
 def send_interview_email(state: RecruitmentState) -> Dict[str, Any]:
@@ -93,7 +98,8 @@ def send_interview_email(state: RecruitmentState) -> Dict[str, Any]:
     for candidate in state["shortlisted_candidates"]:
         subject = "Interview Invitation"
         body = f"Hello {candidate.name},\n\nYou have been shortlisted for the {role} position.\n\nInterview Meeting Link:\n{candidate.zoom_link}\n\nBest regards\nAI Recruitment Agent"
-        email_sender_tool.invoke({"to_email": candidate.email, "subject": subject, "body": body})
+        status = email_sender_tool.invoke({"to_email": candidate.email, "subject": subject, "body": body})
+        candidate.email_status = status
     return {}
 
 def send_rejection_email(state: RecruitmentState) -> Dict[str, Any]:
@@ -102,7 +108,8 @@ def send_rejection_email(state: RecruitmentState) -> Dict[str, Any]:
     for candidate in state["rejected_candidates"]:
         subject = "Application Update"
         body = f"Hello {candidate.name},\n\nThank you for applying for the {role} position.\n\nAfter reviewing your application, we will not be proceeding further.\n\nWe appreciate your interest and encourage you to apply again in the future."
-        email_sender_tool.invoke({"to_email": candidate.email, "subject": subject, "body": body})
+        status = email_sender_tool.invoke({"to_email": candidate.email, "subject": subject, "body": body})
+        candidate.email_status = status
     return {}
 
 def generate_recruitment_report(state: RecruitmentState) -> Dict[str, Any]:

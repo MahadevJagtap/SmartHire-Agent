@@ -12,6 +12,8 @@ class Candidate(BaseModel):
     score: float = Field(0.0, description="Overall candidate score (0-100)")
     status: Literal["shortlisted", "rejected", "pending"] = Field("pending", description="Current status of the candidate")
     zoom_link: Optional[str] = Field(None, description="Zoom meeting link for interview")
+    zoom_status: Optional[str] = Field(None, description="Status of Zoom meeting tool call")
+    email_status: Optional[str] = Field(None, description="Status of email tool call")
     rejection_reason: Optional[str] = Field(None, description="Reason for rejection")
 
 class RecruitmentReport(BaseModel):
