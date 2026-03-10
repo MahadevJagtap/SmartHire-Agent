@@ -34,7 +34,6 @@ wheels/
 *.sqlite3
 
 # Logs
-*.txt
 *.log
 
 # Streamlit
