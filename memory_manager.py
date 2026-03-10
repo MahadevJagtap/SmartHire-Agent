@@ -37,14 +37,16 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 _extraction_llm = ChatGroq(model="llama-3.3-70b-versatile")
 
-EXTRACTION_PROMPT = """Analyze the following user message and extract NEW personal facts about the user.
-Personal facts include: name, profession, preferences, interests, projects, habits, location, goals, etc.
+EXTRACTION_PROMPT = """Analyze the following content (which may be a user message or an uploaded document) and extract KEY personal facts about the user.
+Personal facts include: Full Name, contact info, profession, key skills, major projects, preferences, and career goals.
 
-Only extract facts that are explicitly stated by the user — do NOT infer or guess.
-Return each fact on a SEPARATE LINE as a concise statement (e.g., "User name is Mahadev").
-If there are NO new personal facts, return exactly: NONE
+CRITICAL: If this is a resume or contains a name, ensure the first fact is: "User name is [Full Name]".
 
-User message:
+Only extract facts that are explicitly present — do NOT infer.
+Return each fact on a SEPARATE LINE as a concise, standalone statement.
+If there are NO personal facts, return exactly: NONE
+
+Content to analyze:
 {user_message}
 
 Extracted facts:"""
