@@ -129,6 +129,9 @@ def get_stock_price(symbol: str) -> dict:
 # This allows Streamlit Cloud to read the path from Secrets via environment variables.
 PAGEINDEX_PATH = os.getenv("PAGEINDEX_MCP_PATH", "pageindex/server.py")
 
+# Determine command based on file extension
+mcp_command = "python" if PAGEINDEX_PATH.endswith(".py") else "node"
+
 client = MultiServerMCPClient(
     {
         "expense": {
@@ -137,7 +140,7 @@ client = MultiServerMCPClient(
         },
         "pageindex": {
             "transport": "stdio",
-            "command": "node",
+            "command": mcp_command,
             "args": [PAGEINDEX_PATH],
         },
     }

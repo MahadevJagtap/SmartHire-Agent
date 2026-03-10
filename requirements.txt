@@ -22,4 +22,5 @@ requests
 pandas
 numpy
 pillow
-# Rebuild forced: 2026-03-10 23:40
+# Rebuild forced: 2026-03-10 23:45
+fastmcp
