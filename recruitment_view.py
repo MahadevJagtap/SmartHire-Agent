@@ -107,12 +107,6 @@ def recruitment_page():
                     status.update(label="❌ Error occurred", state="error")
                     st.error(f"Workflow failed: {str(e)}")
                 finally:
-                    # Show logs if they exist
-                    if "final_state" in locals() and final_state.get("logs"):
-                        with st.expander("🛠 Diagnostic Logs (Background Process)"):
-                            for log in final_state["logs"]:
-                                st.write(log)
-                    
                     # Clean up
                     if os.path.exists(temp_dir):
                         shutil.rmtree(temp_dir)
