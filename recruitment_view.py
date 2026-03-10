@@ -64,7 +64,6 @@ def recruitment_page():
                     "job_description": job_desc,
                     "resume_paths": resume_paths,
                     "threshold": float(threshold),
-                    "logs": [],
                     "messages": [HumanMessage(content="Start recruitment process")]
                 }
 

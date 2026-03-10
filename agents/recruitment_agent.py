@@ -1,5 +1,4 @@
 import json
-import operator
 from typing import List, Dict, Any, Annotated, TypedDict
 from langgraph.graph import StateGraph, START, END
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, SystemMessage
@@ -22,7 +21,6 @@ class RecruitmentState(TypedDict):
     rejected_candidates: List[Candidate]
     threshold: float
     report: str
-    logs: Annotated[List[str], operator.add]
     messages: List[BaseMessage]
 
 # ---------------------------------------------------------------------------
@@ -46,9 +44,8 @@ def ingest_resumes(state: RecruitmentState) -> Dict[str, Any]:
 
 def resume_parser_node(state: RecruitmentState) -> Dict[str, Any]:
     print("--- PARSING RESUMES ---")
-    logs = state.get("logs", [])
-    candidates = RecruitmentService.process_resumes(llm, state["resume_paths"], state["job_requirements"], logs)
-    return {"candidates": candidates, "logs": logs}
+    candidates = RecruitmentService.process_resumes(llm, state["resume_paths"], state["job_requirements"])
+    return {"candidates": candidates}
 
 def generate_resume_summary(state: RecruitmentState) -> Dict[str, Any]:
     print("--- GENERATING RESUME SUMMARIES ---")

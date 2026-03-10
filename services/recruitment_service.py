@@ -63,27 +63,19 @@ class RecruitmentService:
         }
 
     @staticmethod
-    def process_resumes(llm, resume_paths: List[str], job_requirements: Dict[str, Any], logs: List[str] = None) -> List[Candidate]:
+    def process_resumes(llm, resume_paths: List[str], job_requirements: Dict[str, Any]) -> List[Candidate]:
         """Process multiple resumes and return candidate objects."""
         candidates = []
-        if logs is None: logs = []
-        
-        logs.append(f"Starting parsing for {len(resume_paths)} resumes.")
         
         for path in resume_paths:
             try:
-                logs.append(f"Processing: {os.path.basename(path)}")
                 raw_data_json = resume_parser_tool.invoke({"file_path": path})
                 raw_data = json.loads(raw_data_json)
                 
                 if "error" in raw_data:
-                    err_msg = f"Parser error for {os.path.basename(path)}: {raw_data['error']}"
-                    logger.error(err_msg)
-                    logs.append(f"❌ {err_msg}")
+                    logger.error(f"Parser error for {os.path.basename(path)}: {raw_data['error']}")
                     continue
 
-                logs.append(f"✅ Text extracted ({len(raw_data['raw_text'])} chars). Extracting details with AI...")
-                
                 prompt = f"""
                 Extract candidate information from this resume text:
                 {raw_data['raw_text']}
@@ -101,9 +93,6 @@ class RecruitmentService:
                 response = llm.invoke(prompt)
                 extracted_data = RecruitmentService._extract_json(response.content)
                 
-                if not extracted_data:
-                    logs.append(f"⚠️ AI returned invalid JSON for {os.path.basename(path)}. Using fallback values.")
-                
                 # Create candidate even if some fields are missing (fallback to dummy values)
                 candidate = Candidate(
                     candidate_id=os.path.basename(path),
@@ -116,14 +105,10 @@ class RecruitmentService:
                     status="pending"
                 )
                 candidates.append(candidate)
-                logs.append(f"✅ Successfully created candidate profile for: {candidate.name}")
             except Exception as e:
-                err_msg = f"Failed to process resume {os.path.basename(path)}: {str(e)}"
-                logger.error(err_msg)
-                logs.append(f"❌ {err_msg}")
+                logger.error(f"Failed to process resume {os.path.basename(path)}: {str(e)}")
                 continue
                 
-        logs.append(f"Finished parsing. Total candidates created: {len(candidates)}")
         return candidates
 
     @staticmethod
