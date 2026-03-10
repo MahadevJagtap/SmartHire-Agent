@@ -99,6 +99,10 @@ def send_interview_email(state: RecruitmentState) -> Dict[str, Any]:
     print("--- SENDING INTERVIEW EMAILS ---")
     role = state["job_requirements"].get("role", "the position")
     for candidate in state["shortlisted_candidates"]:
+        if not candidate.email or candidate.email.lower() in ["n/a", "none", "unknown"]:
+            candidate.email_status = "Skipped: No valid email address found in resume."
+            continue
+            
         subject = "Interview Invitation"
         body = f"Hello {candidate.name},\n\nYou have been shortlisted for the {role} position.\n\nInterview Meeting Link:\n{candidate.zoom_link}\n\nBest regards\nAI Recruitment Agent"
         status = email_sender_tool.invoke({"to_email": candidate.email, "subject": subject, "body": body})
@@ -109,6 +113,10 @@ def send_rejection_email(state: RecruitmentState) -> Dict[str, Any]:
     print("--- SENDING REJECTION EMAILS ---")
     role = state["job_requirements"].get("role", "the position")
     for candidate in state["rejected_candidates"]:
+        if not candidate.email or candidate.email.lower() in ["n/a", "none", "unknown"]:
+            candidate.email_status = "Skipped: No valid email address found in resume."
+            continue
+            
         subject = "Application Update"
         body = f"Hello {candidate.name},\n\nThank you for applying for the {role} position.\n\nAfter reviewing your application, we will not be proceeding further.\n\nWe appreciate your interest and encourage you to apply again in the future."
         status = email_sender_tool.invoke({"to_email": candidate.email, "subject": subject, "body": body})
