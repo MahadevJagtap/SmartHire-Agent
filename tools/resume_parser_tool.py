@@ -20,8 +20,21 @@ def resume_parser_tool(file_path: str) -> str:
     try:
         if ext == ".pdf":
             reader = PdfReader(file_path)
+            # Handle encrypted PDFs
+            if reader.is_encrypted:
+                try:
+                    reader.decrypt("")
+                except Exception as e:
+                    return json.dumps({"error": f"PDF is encrypted and could not be decrypted with empty password: {str(e)}"})
+            
             for page in reader.pages:
-                text += page.extract_text() + "\n"
+                extracted = page.extract_text()
+                if extracted:
+                    text += extracted + "\n"
+            
+            if not text.strip():
+                return json.dumps({"error": "PDF parsing resulted in empty text. It might be an image-only PDF."})
+                
         elif ext == ".docx":
             doc = docx.Document(file_path)
             for para in doc.paragraphs:

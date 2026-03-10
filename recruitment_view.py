@@ -50,18 +50,21 @@ def recruitment_page():
 
                 resume_paths = []
                 for uploaded_file in uploaded_resumes:
-                    path = os.path.join(temp_dir, uploaded_file.name)
+                    # Sanitize filename: replace spaces and special chars with underscores
+                    safe_name = "".join([c if c.isalnum() or c in "._-" else "_" for c in uploaded_file.name])
+                    path = os.path.join(temp_dir, safe_name)
                     with open(path, "wb") as f:
                         f.write(uploaded_file.getbuffer())
                     resume_paths.append(path)
-
-                status.write(f"✅ Saved {len(resume_paths)} resumes.")
+                
+                status.write(f"✅ Saved {len(resume_paths)} resumes (sanitized names).")
 
                 # 2. Initialize State
                 initial_state = {
                     "job_description": job_desc,
                     "resume_paths": resume_paths,
                     "threshold": float(threshold),
+                    "logs": [],
                     "messages": [HumanMessage(content="Start recruitment process")]
                 }
 
@@ -104,6 +107,12 @@ def recruitment_page():
                     status.update(label="❌ Error occurred", state="error")
                     st.error(f"Workflow failed: {str(e)}")
                 finally:
+                    # Show logs if they exist
+                    if "final_state" in locals() and final_state.get("logs"):
+                        with st.expander("🛠 Diagnostic Logs (Background Process)"):
+                            for log in final_state["logs"]:
+                                st.write(log)
+                    
                     # Clean up
                     if os.path.exists(temp_dir):
                         shutil.rmtree(temp_dir)
