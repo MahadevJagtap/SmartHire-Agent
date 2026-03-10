@@ -126,10 +126,8 @@ def get_stock_price(symbol: str) -> dict:
 # ---------------------------------------------------------------------------
 # Tools — MCP (expense + PageIndex)
 # ---------------------------------------------------------------------------
-PAGEINDEX_PATH = os.getenv(
-    "PAGEINDEX_MCP_PATH",
-    r"C:\Users\Shubh\OneDrive\Desktop\pageindex-mcp\build\index.js",
-)
+# This allows Streamlit Cloud to read the path from Secrets via environment variables.
+PAGEINDEX_PATH = os.getenv("PAGEINDEX_MCP_PATH", "pageindex/server.py")
 
 client = MultiServerMCPClient(
     {
