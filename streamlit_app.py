@@ -47,7 +47,7 @@ st.markdown("""
 
 # ============================= Utilities ==================================
 
-_title_llm = ChatGroq(model="llama-3.3-70b-versatile")
+_title_llm = ChatGroq(model="openai/gpt-oss-20b")
 
 
 def generate_thread_id():
