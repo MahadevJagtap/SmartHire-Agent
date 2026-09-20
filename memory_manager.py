@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 # LLM used for automatic memory extraction
 # ---------------------------------------------------------------------------
-_extraction_llm = ChatGroq(model="llama-3.3-70b-versatile")
+_extraction_llm = ChatGroq(model="openai/gpt-oss-20b")
 
 EXTRACTION_PROMPT = """Analyze the following content (which may be a user message or an uploaded document) and extract KEY personal facts about the user.
 Personal facts include: Full Name, contact info, profession, key skills, major projects, preferences, and career goals.
